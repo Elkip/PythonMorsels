@@ -33,21 +33,52 @@ For the third bonus, I'd like you to make sure deep_flatten works with strings â
 
 """
 
-
+'''
+# A solution which handles type error with an exception
 def deep_flatten(iterable):
     flat = []
     for item in iterable:
-        if type(item) in [list, tuple]:
-            for i in deep_flatten(item):
-                flat.append(i)
-        else:
+        try:
+            flat.extend(deep_flatten(item))
+        except TypeError:
             flat.append(item)
     return flat
 
 
+
+# Solution without recursion
+from collections import deque
+
+
+def deep_flatten(iterable):
+    flat = deque()
+    items = list(iterable)
+
+    while items:
+        temp = items.pop()
+        if isinstance(temp, (list, tuple)):
+            flat.extend(temp)
+        else:
+            flat.appendleft(temp)
+    return flat
+'''
+from collections import Iterable
+
+
+def deep_flatten(iterator):
+    flat = []
+    for item in iterator:
+        if isinstance(item, (str,bytes)):
+            yield item
+        elif isinstance(item, Iterable):
+            yield from deep_flatten(item)
+        else:
+            yield item
+
+
 def main():
     print(deep_flatten([[(1, 2), (3, 4)], [(5, 6), (7, 8)]]))
-    deep_flatten([[1, [2, 3]], 4, 5])
+    print(deep_flatten([[1, [2, 3]], 4, 5]))
 
 
 if __name__ == "__main__":
